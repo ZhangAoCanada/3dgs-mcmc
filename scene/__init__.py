@@ -47,6 +47,13 @@ class Scene:
             scene_info = sceneLoadTypeCallbacks["Blender"](args.source_path, args.white_background, args.eval)
         else:
             assert False, "Could not recognize scene type!"
+        
+        if args.test_path:
+            if os.path.exists(os.path.join(args.test_path, "sparse")):
+                scene_info_test = sceneLoadTypeCallbacks["Colmap"](args.test_path, args.images, args.eval, init_type=args.init_type)
+            else:
+                assert False, "Could not recognize scene type!"
+            scene_info.test_cameras.extend(scene_info_test.train_cameras)
 
         if not self.loaded_iter:
             with open(scene_info.ply_path, 'rb') as src_file, open(os.path.join(self.model_path, "input.ply") , 'wb') as dest_file:
